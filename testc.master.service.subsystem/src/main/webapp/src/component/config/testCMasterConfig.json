@@ -1,0 +1,9 @@
+{
+    "displayName" : "TestC",
+    "name" : "testc",
+    "templateName" : "testc",
+    "url" : "testc.html",
+    "server": "localhost:8080",
+    "context": "/testc.master.service.subsystem/webresources/TestCMaster",
+    "el" : "#main"
+}

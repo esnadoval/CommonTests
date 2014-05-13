@@ -1,0 +1,9 @@
+{
+    "displayName" : "TestA",
+    "name" : "testa",
+    "templateName" : "testa",
+    "url" : "testa.html",
+    "server": "localhost:8080",
+    "context": "/testa.master.service.subsystem/webresources/TestAMaster",
+    "el" : "#main"
+}

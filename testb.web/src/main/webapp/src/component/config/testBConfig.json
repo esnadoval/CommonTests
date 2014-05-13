@@ -1,0 +1,9 @@
+{
+    "displayName" : "TestB",
+    "name" : "testB",
+    "templateName" : "testB",
+    "url" : "user.html",
+    "server": "localhost:8080",
+    "context": "/testb.service.subsystem.web/webresources/TestB",
+    "el" : "#main"
+}

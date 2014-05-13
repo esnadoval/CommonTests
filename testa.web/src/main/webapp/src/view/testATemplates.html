@@ -1,0 +1,48 @@
+<script type="text/template" id="testAList">
+    <div class="panel panel-default">
+    <!-- Default panel contents -->
+    <table class="table striped">
+    <thead>
+    <tr>
+		 <th>name</th>
+		 <th>atr1</th>
+    <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% _.each(testAs, function(testA) { %>
+    <tr>
+		<td><%= htmlEncode(testA.getDisplay('name')) %></td>
+		<td><%= htmlEncode(testA.getDisplay('atr1')) %></td>
+    <td>
+    <% if(showEdit) {%>
+    <a onclick="Backbone.trigger('<%= componentId %>-testA-edit',{id:<%= testA.id %>}); return false" >Edit</a> |
+	<% } %> 
+	<% if(showDelete) {%>
+    <a onclick="Backbone.trigger('<%= componentId %>-testA-delete',{id:<%= testA.id %>}); return false" >Delete</a> 
+	<% } %>    
+	</td>
+    </tr>
+    <% }); %>
+    </tbody>
+    </table>
+    </div>
+</script>
+
+<script type="text/template" id="testA">
+    <div class="form-group">
+    <form role="form" id="<%= componentId %>-testAForm">
+    <% if(testA.id) {%>
+    <input type="hidden" name="id" value="<%= testA.id %>"/>
+    <% }%>
+		<div class="form-group" >
+		<label for="name">name</label>
+    	<input type="text" class="form-control" id="name" name="name" placeholder="Enter value" value="<%= testA.get('name') %>"/>	
+		</div>
+		<div class="form-group" >
+		<label for="atr1">atr1</label>
+    	<input type="text" class="form-control" id="atr1" name="atr1" placeholder="Enter value" value="<%= testA.get('atr1') %>"/>	
+		</div>
+    </form>
+    </div>
+</script> 
