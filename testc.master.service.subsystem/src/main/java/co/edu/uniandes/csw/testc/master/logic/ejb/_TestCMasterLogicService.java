@@ -28,6 +28,14 @@ public abstract class _TestCMasterLogicService implements _ITestCMasterLogicServ
                 testcMasterPersistance.createTestCTestB(testcTestBEntity);
             }
         }
+        // update testB
+        if (testc.getUpdateTestB() != null) {
+            for (TestBDTO testBDTO : testc.getUpdateTestB()) {
+                testBPersistance.updateTestB(testBDTO);
+                TestCTestBEntity testcTestBEntity = new TestCTestBEntity(persistedTestCDTO.getId(), testBDTO.getId());
+                testcMasterPersistance.createTestCTestB(testcTestBEntity);
+            }
+        }
         return testc;
     }
 
@@ -43,6 +51,12 @@ public abstract class _TestCMasterLogicService implements _ITestCMasterLogicServ
         testcPersistance.updateTestC(testc.getTestCEntity());
 
         //---- FOR RELATIONSHIP
+        // delete testB
+        if (testc.getDeleteTestB() != null) {
+            for (TestBDTO testBDTO : testc.getDeleteTestB()) {
+                testcMasterPersistance.deleteTestCTestB(testc.getTestCEntity().getId(), testBDTO.getId());
+            }
+        }
         // persist new testB
         if (testc.getCreateTestB() != null) {
             for (TestBDTO testBDTO : testc.getCreateTestB()) {
@@ -53,13 +67,11 @@ public abstract class _TestCMasterLogicService implements _ITestCMasterLogicServ
         // update testB
         if (testc.getUpdateTestB() != null) {
             for (TestBDTO testBDTO : testc.getUpdateTestB()) {
-                testBPersistance.updateTestB(testBDTO);
-            }
-        }
-        // delete testB
-        if (testc.getDeleteTestB() != null) {
-            for (TestBDTO testBDTO : testc.getDeleteTestB()) {
                 testcMasterPersistance.deleteTestCTestB(testc.getTestCEntity().getId(), testBDTO.getId());
+                testBPersistance.updateTestB(testBDTO);
+                TestCTestBEntity testcTestBEntity = new TestCTestBEntity(testc.getId(), testBDTO.getId());
+                testcMasterPersistance.createTestCTestB(testcTestBEntity);
+                
             }
         }
     }

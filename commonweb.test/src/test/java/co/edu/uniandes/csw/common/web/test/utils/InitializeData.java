@@ -47,6 +47,42 @@ public class InitializeData {
 
     }
 
+    public static void fetchData(int number) {
+        try {
+            Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();
+            //Get a connection
+            Connection conn = DriverManager.getConnection(DB_URL);
+
+            PodamFactory factory = new PodamFactoryImpl();
+
+            Statement stmt = conn.createStatement();
+
+            String sql = "INSERT INTO TESTCENTITY (ID,NAME,ATR3) "
+                    + "VALUES (0,'nametest', 'atrtest')";
+
+            stmt.executeUpdate(sql);
+
+            for (int i = 0; i < number; i++) {
+                TestBDTO entity = factory.manufacturePojo(TestBDTO.class);
+
+                sql = "INSERT INTO TESTBENTITY (ID,NAME,ATR2) "
+                        + "VALUES (" + i + ",'" + entity.getName() + "', '" + entity.getAtr2() + "')";
+
+                stmt.executeUpdate(sql);
+
+                sql = "INSERT INTO TESTCTESTBENTITY (TESTBID,TESTCID) "
+                        + "VALUES (" + i + ",0)";
+
+                stmt.executeUpdate(sql);
+                //Se almacenan en el arreglo de datos
+
+            }
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void flushDataShared() {
         try {
             Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();
