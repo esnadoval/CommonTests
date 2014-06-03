@@ -37,7 +37,7 @@ public class SharedListTest {
 
     }
 
-    /*
+   
      @Test
      public void createWSharedList() throws Exception {
      Thread.sleep(2000);
@@ -92,11 +92,11 @@ public class SharedListTest {
      assertTrue(fail);
 
      }
-     */
+     
     @Test
     public void editWSharedList() throws Exception {
         InitializeData.fetchData(5);
-        /*
+        
         driver.findElements(By.linkText("Edit")).get(driver.findElements(By.linkText("Edit")).size() - 1).click();
 
         Thread.sleep(2000);
@@ -139,9 +139,43 @@ public class SharedListTest {
         }
         InitializeData.flushDataShared();
         assertTrue(fail);
-          */
+          
     }
 
+    @Test
+    public void deleteWSharedList() throws Exception {
+        InitializeData.fetchData(5);
+        
+          /**
+         * Se hace clic en el vinculo "Delete" del primer elemento de la lista
+         * de sports
+         */
+        driver.findElement(By.linkText("Delete")).click();
+        Thread.sleep(2000);
+        /**
+         * Se verifica que en la lista el elemento halla desaparecido. Si
+         * existe, hubo un error.
+         */
+        try {
+            List<WebElement> table = driver.findElements(By.xpath("//table[contains(@class,'table striped')]/tbody/tr"));
+            boolean fail = false;
+            for (WebElement webElement : table) {
+                List<WebElement> elems = webElement.findElements(By.xpath("td"));
+ 
+                if (elems.get(0).getText().equals("nametest")) {
+                    fail = true;
+                }
+ 
+            }
+ 
+            WebElement dialog = driver.findElement(By.xpath("//div[contains(@style,'display: block;')]"));
+            assertTrue(dialog != null && !fail);
+        } catch (Exception e) {
+            assertTrue(true);
+        }
+          
+    }
+    
     @AfterClass
     public static void tearDown() throws Exception {
         driver.quit();
