@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package co.edu.uniandes.csw.master.test.persistence;
 
 import co.edu.uniandes.csw.rules.InitializeData;
@@ -52,17 +51,17 @@ import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 public class TestCPersistenceTest {
-    
+
     public static final String DEPLOY = "Prueba";
     //Regla implementada para manejar múltiples escenarios de datos
     @Rule
     public TestCTestRule rule = new TestCTestRule("dataSample");
 //Almacena el dato actual de la regla.
     private TestCDTO dataSample;
-    
+
     @Deployment
     public static WebArchive createDeployment() {
-        
+
         return ShrinkWrap.create(WebArchive.class, DEPLOY + ".war")
                 //Añade el paquete en el que se encuentra la clase 'TestCPersistance.java'
                 //.addPackage(TestCPersistence.class.getPackage())
@@ -96,72 +95,70 @@ public class TestCPersistenceTest {
     //Método que configura las pruebas antes de ejecutarlas
     @Before
     public void configTest() {
-        
+
         System.out.println("em: " + em);
-        
+
     }
-    
+
     @Test
     public void createTestCTest() {
         try {
             System.err.println("--> " + dataSample);
             utx.begin();
             em.createQuery("delete from TestCEntity").executeUpdate();
-           
+
             em.createQuery("delete from TestBEntity").executeUpdate();
-             em.createQuery("delete from TestCTestBEntity").executeUpdate();
+            em.createQuery("delete from TestCTestBEntity").executeUpdate();
             utx.commit();
-             System.err.println("--> load");
+            System.err.println("--> load");
             utx.begin();
-            
+
             ArrayList<TestBDTO> details = InitializeData.generateTestB(5);
-            
+
             for (TestBDTO testBDTO : details) {
                 testBDTO.setId((long) 0);
                 TestBEntity e = TestBConverter.persistenceDTO2Entity(testBDTO);
                 em.persist(e);
                 testBDTO.setId(e.getId());
-               // System.err.println("-->ID"+ e.getId());
+                // System.err.println("-->ID"+ e.getId());
             }
             TestCEntity m = TestCConverter.persistenceDTO2Entity(dataSample);
             em.persist(m);
             dataSample.setId(m.getId());
             utx.commit();
-            
+
             ArrayList<TestCTestBEntity> oracle = new ArrayList<TestCTestBEntity>();
-             System.err.println("--> begin");
+            System.err.println("--> begin");
             for (TestBDTO testBDTO : details) {
-                
+
                 TestCTestBEntity temp = new TestCTestBEntity(dataSample.getId(), testBDTO.getId());
                 testCMasterPersistence.createTestCTestB(temp);
                 oracle.add(temp);
             }
-           
-            
+
             Query q = em.createNamedQuery("TestCTestBEntity.getTestBListForTestC");
             q.setParameter("testcId", dataSample.getId());
             List<TestCTestBEntity> qResult = q.getResultList();
-            
+
             boolean invalid = true;
             if (qResult.size() != oracle.size()) {
                 assertTrue(false);
             }
-            
+
             for (TestCTestBEntity testCTestBEntity : qResult) {
                 boolean fnd = false;
                 for (int i = 0; i < oracle.size() && !fnd; i++) {
-                    System.err.println(testCTestBEntity.getTestBId()+"=="+oracle.get(i).getTestCId());
+                    System.err.println(testCTestBEntity.getTestBId() + "==" + oracle.get(i).getTestCId());
                     invalid = true;
                     if (oracle.get(i).getTestBId() == testCTestBEntity.getTestBId() && oracle.get(i).getTestCId() == testCTestBEntity.getTestCId()) {
                         fnd = true;
                         invalid = false;
                     }
-                    
+
                 }
             }
-            
+
             assertTrue(!invalid);
-            
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -170,9 +167,79 @@ public class TestCPersistenceTest {
                 utx.rollback();
             } catch (Exception ex1) {
                 ex.printStackTrace();
-            }            
-        }        
-        
+            }
+        }
+
     }
-    
+
+    @Test
+    public void TestBListForCTest() {
+        try {
+            System.err.println("--> " + dataSample);
+            utx.begin();
+            em.createQuery("delete from TestCEntity").executeUpdate();
+
+            em.createQuery("delete from TestBEntity").executeUpdate();
+            em.createQuery("delete from TestCTestBEntity").executeUpdate();
+            utx.commit();
+            System.err.println("--> load");
+            utx.begin();
+
+            ArrayList<TestBDTO> details = InitializeData.generateTestB(5);
+
+            for (TestBDTO testBDTO : details) {
+                testBDTO.setId((long) 0);
+                TestBEntity e = TestBConverter.persistenceDTO2Entity(testBDTO);
+                em.persist(e);
+                testBDTO.setId(e.getId());
+                // System.err.println("-->ID"+ e.getId());
+            }
+            TestCEntity m = TestCConverter.persistenceDTO2Entity(dataSample);
+            em.persist(m);
+            dataSample.setId(m.getId());
+
+            for (TestBDTO testBDTO : details) {
+                TestBEntity temp = TestBConverter.persistenceDTO2Entity(testBDTO);
+                em.persist(temp);
+                testBDTO.setId(temp.getId());
+            }
+            ArrayList<TestBDTO> oracle = new ArrayList<TestBDTO>();
+
+            for (TestBDTO testCTestBEntity : details) {
+                TestBEntity tmp = TestBConverter.persistenceDTO2Entity(testCTestBEntity);
+                em.persist(tmp);
+                testCTestBEntity.setId(tmp.getId());
+                oracle.add(testCTestBEntity);
+            }
+            
+            
+
+            utx.commit();
+
+            List<TestBDTO> dd = testCMasterPersistence.getTestBListForTestC(dataSample.getId());
+            boolean valid = false;
+            for (TestBDTO testBDTO : dd) {
+                valid = false;
+                boolean enc = false;
+                for (int i = 0; i < oracle.size() && !enc; i++) {
+                    if(oracle.get(i).getId() == testBDTO.getId()){
+                        valid = true;
+                        enc = true;
+                    }
+                }
+            }
+            
+            assertTrue(valid);
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail();
+            try {
+                utx.rollback();
+            } catch (Exception ex1) {
+                ex.printStackTrace();
+            }
+        }
+
+    }
 }
