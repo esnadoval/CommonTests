@@ -15,7 +15,7 @@ import javax.persistence.Query;
 
 public class _TestCMasterPersistence implements _ITestCMasterPersistence {
 
-    @PersistenceContext(unitName = "TestCMasterPU")
+    @PersistenceContext(unitName = "TestCPU")
     protected EntityManager entityManager;
     
     @Inject
